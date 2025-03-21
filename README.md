@@ -22,7 +22,8 @@ This library is the stand-alone motor control library. For a full implementation
 
 1. Clone or download this repository.
 2. Copy the `MultiStepperLite` folder into your project's library directory.
-3. Include the library in your code:
+3. Alternatively, install it through Arduino IDE's library.
+4. Include the library in your code:
     ```cpp
     #include "MultiStepperLite.h"
     ```
