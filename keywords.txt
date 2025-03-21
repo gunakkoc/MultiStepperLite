@@ -1,0 +1,38 @@
+#######################################
+# Syntax Coloring Map For MultiStepperLite
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MultiStepperLite	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+do_tasks	KEYWORD2
+set_stepper_count	KEYWORD2
+set_min_pulse_width	KEYWORD2
+init_stepper	KEYWORD2
+start_finite	KEYWORD2
+start_continuous	KEYWORD2
+stop	KEYWORD2
+pause	KEYWORD2
+resume	KEYWORD2
+is_running	KEYWORD2
+is_finished	KEYWORD2
+is_paused	KEYWORD2
+get_remaining_steps	KEYWORD2
+set_min_step_interval	KEYWORD2
+set_autocorrect	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
