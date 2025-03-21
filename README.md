@@ -63,7 +63,7 @@ void setup(){
     steppers.init_stepper(1, motor1_stepPin);
     
     //start motor 0, with 4000 microseconds delay between steps and with finite steps of 2500
-    steppers.start_finite(0, 4000, 4294967295);
+    steppers.start_finite(0, 4000, 2500);
     
     //start motor 1 to run indefinitely, with 2000 microseconds delay between steps
     steppers.start_continuous(1, 2000);
