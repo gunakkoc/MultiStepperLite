@@ -26,6 +26,7 @@ is_finished	KEYWORD2
 is_paused	KEYWORD2
 get_remaining_steps	KEYWORD2
 set_min_step_interval	KEYWORD2
+set_step_interval	KEYWORD2
 set_autocorrect	KEYWORD2
 
 #######################################
