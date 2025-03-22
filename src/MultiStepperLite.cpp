@@ -69,6 +69,11 @@ void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 		}
 		//No remaining steps; ensure the motor is stopped gracefully.
 		//Need to ensure: the last pin state is LOW and and enough time passed for it to be registered
+#if SLOW_PROCESSOR
+		digitalWrite(m->step_pin, LOW);
+		m->last_pin_state = false;
+		m->running = false;
+#else
 		if (m->last_pin_state){ //if the last pin state is HIGH
 			if ((current_time - m->last_high_time) >= _min_pulse_width){ //if enough time has passed for HIGH to be registered by the motor drive
 				digitalWrite(m->step_pin, LOW); //pull LOW
@@ -81,6 +86,7 @@ void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 		if ((current_time - m->last_low_time) >= _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
 			m->running = false; //current_time we can signal the motor is finished.
 		}
+#endif
 	}
 }
 
@@ -148,8 +154,8 @@ void MultiStepperLite::do_tasks(uint32_t current_time) {
 		//So that the last pin state is LOW and and enough time passed for it to be registered.
 #if SLOW_PROCESSOR
 		digitalWrite(m->step_pin, LOW);
-		m->last_low_time = current_time;
 		m->last_pin_state = false;
+		m->running = false;
 #else
 		if (m->last_pin_state){ //if the last pin state is HIGH
 			if ((current_time - m->last_high_time) >= _min_pulse_width){ //if minimum time has passed for stepper driver to register a change 
