@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![DOI](https://zenodo.org/badge/952787652.svg)](https://doi.org/10.5281/zenodo.15068969) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # MultiStepperLite
 
