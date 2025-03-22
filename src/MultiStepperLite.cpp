@@ -66,6 +66,7 @@ void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 				}
 				continue;
 			}
+			continue; //else move on to the next motor (until step_interval elapses)
 		}
 		//No remaining steps; ensure the motor is stopped gracefully.
 		//Need to ensure: the last pin state is LOW and and enough time passed for it to be registered
@@ -148,8 +149,8 @@ void MultiStepperLite::do_tasks(uint32_t current_time) {
 				m->steps -= m->finite_mode; //if finite mode, then decrease by 1, continuous mode doesn't decrease
 				continue;
 			}
+			continue; //else move on to the next motor (until step_interval elapses)
 		}
-
 		//If no remaining steps then ensure the motor is stopped gracefully.
 		//So that the last pin state is LOW and and enough time passed for it to be registered.
 #if SLOW_PROCESSOR
@@ -237,8 +238,7 @@ bool MultiStepperLite::start_finite(uint8_t motor_index, uint32_t step_interval,
 }
 
 bool MultiStepperLite::start_finite(uint8_t motor_index, uint32_t step_interval, uint32_t step_count){
-	uint32_t current_time = micros();
-	return _start_motor(motor_index, step_interval, step_count, 1, current_time);
+	return _start_motor(motor_index, step_interval, step_count, 1, micros());
 }
 
 bool MultiStepperLite::start_continuous(uint8_t motor_index, uint32_t step_interval, uint32_t current_time){
@@ -246,8 +246,7 @@ bool MultiStepperLite::start_continuous(uint8_t motor_index, uint32_t step_inter
 }
 
 bool MultiStepperLite::start_continuous(uint8_t motor_index, uint32_t step_interval){
-	uint32_t current_time = micros();
-	return _start_motor(motor_index, step_interval, 1, 0, current_time);
+	return _start_motor(motor_index, step_interval, 1, 0, micros());
 }
 
 void MultiStepperLite::stop(uint8_t motor_index){ //this will stop the motor immediately

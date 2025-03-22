@@ -68,6 +68,7 @@ void loop(){
 	}
 	
 	steppers.do_tasks();
+
 	//alternatively, call steppers.do_tasks(now_us); //if you have your own microsecond timekeeping variable
 	//this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
 	//without an argument, the function calls micros() internally

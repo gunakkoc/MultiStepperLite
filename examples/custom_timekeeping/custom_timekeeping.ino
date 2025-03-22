@@ -31,7 +31,7 @@
 bool led_last_state;
 unsigned long led_last_blink_time;
 
-steppers = MultiStepperLite(2); //initialize for 2 motors
+MultiStepperLite steppers(2); //initialize for 2 motors
 
 void setup(){
 	pinMode(motor0_enabledPin, OUTPUT);
@@ -94,7 +94,7 @@ void loop(){
 	
 
     //do the tasks for the steppers, using time keeping variable in milliseconds
-	stepper.do_tasks(current_time_ms);
+	steppers.do_tasks(current_time_ms);
 	
 	//LED blinking task
 	if (steppers.is_finished(0) && steppers.is_finished(1)){ //if both motor 0 and 1 are finished
