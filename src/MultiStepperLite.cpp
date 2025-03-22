@@ -180,7 +180,6 @@ void MultiStepperLite::do_tasks(){
 void MultiStepperLite::set_stepper_count(uint8_t motor_count){
 	if (motor_count > MAX_MOTOR_COUNT){return;}
 	_stepper_count = motor_count;
-#endif
 }
 
 void MultiStepperLite::set_min_pulse_width(uint32_t min_pulse_width){
