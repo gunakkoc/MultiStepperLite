@@ -12,6 +12,7 @@
 #else
 #define SLOW_PROCESSOR 0 //set to 0 for faster processors (e.g. ESP32, RP2040, STM32)
 #endif
+#endif
 
 #ifndef DEF_MIN_PULSE_WIDTH
 #define DEF_MIN_PULSE_WIDTH 2 //typically maximum 2 microseconds (for DRV8825, and shorter for others)
