@@ -1,5 +1,5 @@
 // Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache 2.0
+// License: Apache License 2.0
 
 // This example demostrates the automatic time correction capability of the MultiStepperLite.
 // Even with blocking heavy workloads in the main loop, the motors will try to catch up.
@@ -15,7 +15,7 @@
 #define motor1_dirPin 6
 
 bool led_last_state;
-unsigned long led_last_blink_time;
+uint32_t led_last_blink_time;
 
 MultiStepperLite steppers(2); //initialize for 2 motors
 
@@ -53,8 +53,11 @@ void setup(){
 
 	//this will be used for correcting time deviation between motor steps
 	//this setting is required for enabling time autocorrection
-	steppers.set_min_step_interval(0, 1000);
-	steppers.set_min_step_interval(1, 1000);
+	//min step interval must not be smaller than (min_pulse_width * 2)
+	//min_pulse_width default is set to 2us, consult stepper driver datasheet for the minimum pulse width
+	//use steppers.set_min_pulse_width(x) to adjust
+	steppers.set_min_step_interval(0, 3); //set minimum step interval for motor 0 to 3 microseconds
+	steppers.set_min_step_interval(1, 3); //set minimum step interval for motor 1 to 3 microseconds
 	
 	//enable automatic time correction, so when a motor step is delayed, the next step will happen faster.
 	//this ensures the motor task ends on time even steppers.do_tasks() is called with irregular delays.
@@ -84,7 +87,7 @@ void loop(){
 	if (steppers.is_finished(0) && steppers.is_finished(1)){ //if both motor 0 and 1 are finished
 		digitalWrite(LED_BUILTIN, HIGH);
 	} else {
-		unsigned long now_us = micros();
+		uint32_t now_us = micros();
 		if ((now_us - led_last_blink_time) > 1000000){ //else if 1 second has passed since the last change of LED_BUILTIN
 			led_last_state = !led_last_state;
 			digitalWrite(LED_BUILTIN, led_last_state);

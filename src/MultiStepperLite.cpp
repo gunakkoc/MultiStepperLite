@@ -1,5 +1,5 @@
 // Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache 2.0
+// License: Apache License 2.0
 
 #include <Arduino.h>
 #include "MultiStepperLite.h"
@@ -11,7 +11,7 @@ MultiStepperLite::MultiStepperLite(uint8_t count) : _stepper_count(count), _min_
 #endif
 
 #if TIME_AUTOCORRECT_SUPPORT
-// Here, the current time in microseconds (current_time) is used to calculate the time elapsed since the last motor step.
+// Here, current_time is used to calculate the time elapsed since the last motor step.
 // If this delta time is equal to greater than the given step interval, the motor is stepped.
 // Furthermore, if the delta time is greater than the step interval, the exact timing is missed.
 // The lag is calculated as lag = delta_time - step_interval
@@ -53,17 +53,20 @@ void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 #endif
 				digitalWrite(m->step_pin, HIGH); //take a step by pulling from LOW to HIGH
 				m->last_high_time = current_time;
+				m->last_corrected_high_time = current_time;
 				m->last_pin_state = true;
 				m->steps -= m->finite_mode; //if finite mode, then decrease by 1, continuous mode doesn't decrease
 				m->total_lag += _motor_delta_time - m->step_interval;
 				if (m->total_lag) {
 					if (m->total_lag > m->max_correctable_lag){
-						m->last_corrected_high_time = current_time - m->max_correctable_lag; //correct maximum correctable time
+						m->last_corrected_high_time -= m->max_correctable_lag; //correct maximum correctable time
 						m->total_lag -= m->max_correctable_lag;
 					} else {
 						m->last_corrected_high_time -= m->total_lag; //correct all
 						m->total_lag = 0;
 					}
+				} else {
+					m->last_corrected_high_time = m->last_high_time; //no correction needed
 				}
 				continue; //stepping took place, move on to the next motor
 			}
@@ -97,13 +100,38 @@ void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 void MultiStepperLite::set_min_step_interval(uint8_t motor_index, uint32_t min_interval){
 	if (motor_index >= _stepper_count){return;}
 	if (min_interval < (_min_pulse_width * 2)){return;}
-	_stepper_motors[motor_index].min_step_interval = min_interval;
+	StepperMotor_t *m = &_stepper_motors[motor_index];
+	m->min_step_interval = min_interval;
+	if (_time_autocorrect_enabled && m->running && (m->step_interval >= min_interval)){
+		m->max_correctable_lag = m->step_interval - min_interval;
+	}
 }
 
 void MultiStepperLite::set_autocorrect(bool autocorrect){
+	//if switching from disabled to enabled, handle last_corrected_high_time for running motors
+	if (autocorrect && !_time_autocorrect_enabled){
+		for (uint8_t i=0; i<_stepper_count; i++){
+			StepperMotor_t *m = &_stepper_motors[i];
+			if (m->running){
+				m->last_corrected_high_time = m->last_high_time;
+			}
+		}
+	}
 	_time_autocorrect_enabled = autocorrect;
 }
 #endif
+
+void MultiStepperLite::set_step_interval(uint8_t motor_index, uint32_t step_interval){
+	if (motor_index >= _stepper_count){return;}
+	if (step_interval < (_min_pulse_width * 2)){return;}
+#if TIME_AUTOCORRECT_SUPPORT
+	StepperMotor_t *m = &_stepper_motors[motor_index];
+	m->max_correctable_lag = step_interval - m->min_step_interval;
+	m->step_interval = step_interval;
+#else
+	_stepper_motors[motor_index].step_interval = step_interval;
+#endif
+}
 
 // Here, current_time is used to calculate the time elapsed since the last motor step.
 // If this delta time is equal to greater than the given step interval, the motor is stepped.
@@ -172,11 +200,11 @@ void MultiStepperLite::do_tasks(uint32_t current_time) {
 			}
 			continue; //else move on to the next motor (until _min_pulse_width elapses)
 		}
-		if ((current_time - m->last_low_time) < _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
+		if ((current_time - m->last_low_time) >= _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
 			m->running = false; //now we can signal the motor is finished.
 			continue; //move on to the next motor
 		}
-		//else LOW to be registered by the motor driver will be waited.
+		// continue; //else LOW to be registered by the motor driver will be waited.
 #endif
 	}
 }

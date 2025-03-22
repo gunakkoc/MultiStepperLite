@@ -43,14 +43,14 @@ void setup(){
 	digitalWrite(LED_BUILTIN, LOW);
 	led_last_state = LOW;
 	led_last_blink_time = micros();
-	
+
 	//initialize each of 2 motors with their step pin
 	steppers.init_stepper(0, motor0_stepPin);
 	steppers.init_stepper(1, motor1_stepPin);
-	
+
 	//start motor 0, with 4000 microseconds delay between steps and with finite steps of 4294967295 (max number of steps)
 	steppers.start_finite(0, 4000, 4294967295);
-	
+
 	//start motor 1 to run indefinitely, with 2000 microseconds delay between steps
 	steppers.start_continuous(1, 2000);
 	
@@ -62,17 +62,17 @@ void loop(){
 		//you can access remaining steps here via nsteps = steppers.get_remaining_steps(0);
 		steppers.stop(0); //stop motor 0, also resets remaining steps to 0
 	}
-	
+
 	if (digitalRead(motor1_endstopPin) == LOW){ //if end stop of motor 1 is triggered
 		steppers.stop(1); //stop motor 1
 	}
-	
+
 	steppers.do_tasks();
 
 	//alternatively, call steppers.do_tasks(now_us); //if you have your own microsecond timekeeping variable
 	//this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
 	//without an argument, the function calls micros() internally
-	
+
 	//LED blinking task
 	if (steppers.is_finished(0) && steppers.is_finished(1)){ //if both motor 0 and 1 are finished
 		digitalWrite(LED_BUILTIN, HIGH);

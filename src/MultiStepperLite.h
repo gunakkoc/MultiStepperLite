@@ -1,5 +1,5 @@
 // Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache 2.0
+// License: Apache License 2.0
 
 #ifndef MULTISTEPPERLITE_H
 #define MULTISTEPPERLITE_H
@@ -40,6 +40,7 @@ public:
 	void do_tasks(uint32_t current_time); //only to be used when providing your own 32-bit timekeeping variable
 	void set_stepper_count(uint8_t motor_count);
 	void set_min_pulse_width(uint32_t min_pulse_width); //generally needed when providing your own 32-bit timekeeping variable (e.g. a timer with 2us resolution)
+	void set_step_interval(uint8_t motor_index, uint32_t step_interval); //change the step interval of a running motor
 	void init_stepper(uint8_t motor_index, int step_pin);
 	bool start_finite(uint8_t motor_index, uint32_t step_interval, uint32_t step_count);
 	bool start_finite(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint32_t current_time); //only to be used when providing your own 32-bit timekeeping variable

@@ -1,5 +1,5 @@
 // Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache 2.0
+// License: Apache License 2.0
 
 // A minimal demostration of running 3 motors indepedently and simultaneously using a generic CNC shield.
 // While blinking the LED until the motors finish their tasks.
@@ -15,7 +15,7 @@
 #define motor2_dirPin 7
 
 bool led_last_state;
-unsigned long led_last_blink_time;
+uint32_t led_last_blink_time;
 MultiStepperLite steppers(3); //initialize for 3 motors
 
 void setup(){

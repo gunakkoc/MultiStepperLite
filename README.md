@@ -40,7 +40,7 @@ This library is the stand-alone motor control library. For a full implementation
 #define motor1_stepPin 3
 #define motor1_dirPin 6
 
-steppers = MultiStepperLite(2); //initialize for 2 motors
+MultiStepperLite steppers(2); //initialize for 2 motors
 
 bool motor0_finish_signalled = false;
 
@@ -72,7 +72,7 @@ void setup(){
 
 void loop(){
 
-    stepper.do_tasks();
+    steppers.do_tasks();
     //alternatively, define uint32_t now_us = micros() and call steppers.do_tasks(now_us)
     //this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
     //without an argument, the function calls micros() internally

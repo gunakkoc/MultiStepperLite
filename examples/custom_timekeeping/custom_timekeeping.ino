@@ -53,21 +53,22 @@ void setup(){
 
 	uint32_t now_ms = millis();
 	led_last_blink_time = now_ms;
-    //Since the custom timekeeping variable is millis(), all time definitions will be in milliseconds
+	//Since the custom timekeeping variable is millis(), all time definitions will be in milliseconds
 
-    steppers.set_min_pulse_width(1); //set minimum pulse width to 1 millisecond
+	steppers.set_min_pulse_width(1); //set minimum pulse width to 1 millisecond
 	//initialize each of 2 motors with their step pin
 	steppers.init_stepper(0, motor0_stepPin);
 	steppers.init_stepper(1, motor1_stepPin);
 
-    steppers.set_min_step_interval(0, 1); //set minimum step interval for motor 0 to 1 millisecond
-    steppers.set_min_step_interval(1, 2); //set minimum step interval for motor 1 to 2 milliseconds
+	//min step interval must not be smaller than (min_pulse_width * 2)
+	steppers.set_min_step_interval(0, 3); //set minimum step interval for motor 0 to 3 milliseconds
+	steppers.set_min_step_interval(1, 3); //set minimum step interval for motor 1 to 3 milliseconds
 
-    steppers.set_autocorrect(true); //enable time autocorrection
-	
+	steppers.set_autocorrect(true); //enable time autocorrection
+
 	//start motor 0, with 6 milliseconds delay between steps and with finite steps of 1000.
 	steppers.start_finite(0, 10, 1000, now_ms);
-	
+
 	//start motor 1, with 8 milliseconds delay between steps and with finite steps of 2000.
 	steppers.start_finite(1, 8, 2000, now_ms);
 	
@@ -76,11 +77,11 @@ void setup(){
 
 void loop(){
 
-    uint32_t current_time_ms = millis(); //current milliseconds
-	
-    //do the tasks for the steppers, using time keeping variable in milliseconds
+	uint32_t current_time_ms = millis(); //current milliseconds
+
+	//do the tasks for the steppers, using time keeping variable in milliseconds
 	steppers.do_tasks(current_time_ms);
-	
+
 	//LED blinking task
 	if (steppers.is_finished(0) && steppers.is_finished(1)){ //if both motor 0 and 1 are finished
 		digitalWrite(LED_BUILTIN, HIGH);
