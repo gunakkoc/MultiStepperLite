@@ -180,10 +180,6 @@ void MultiStepperLite::do_tasks(){
 void MultiStepperLite::set_stepper_count(uint8_t motor_count){
 	if (motor_count > MAX_MOTOR_COUNT){return;}
 	_stepper_count = motor_count;
-#if TIME_AUTOCORRECT_SUPPORT
-	for (uint8_t i=0; i<_stepper_count; i++){
-		_stepper_motors[i].min_step_interval = DEF_MIN_STEP_INTERVAL;
-	}
 #endif
 }
 
@@ -193,9 +189,25 @@ void MultiStepperLite::set_min_pulse_width(uint32_t min_pulse_width){
 
 void MultiStepperLite::init_stepper(uint8_t motor_index, int step_pin){
 	if (motor_index >= _stepper_count){return;}
-	_stepper_motors[motor_index].step_pin = step_pin;
 	pinMode(step_pin, OUTPUT);
 	digitalWrite(step_pin, LOW);
+	StepperMotor_t *m = &_stepper_motors[motor_index];
+	m->step_pin = step_pin;
+	m->last_pin_state = false;
+	m->steps = 0;
+	m->running = false;
+#if TIME_AUTOCORRECT_SUPPORT
+	m->min_step_interval = DEF_MIN_STEP_INTERVAL;
+	// m->total_lag = 0;
+#endif
+// 	m->last_high_time = 0;
+// #if SLOW_PROCESSOR == 0
+// 	m->last_low_time = 0;
+// #endif
+// #if TIME_AUTOCORRECT_SUPPORT
+// 	m->last_corrected_high_time = 0;
+// 	m->max_correctable_lag = 0;
+// #endif
 }
 
 bool MultiStepperLite::_start_motor(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint8_t finite_mode, uint32_t current_time){
@@ -206,7 +218,7 @@ bool MultiStepperLite::_start_motor(uint8_t motor_index, uint32_t step_interval,
 	if (_time_autocorrect_enabled && (step_interval < m->min_step_interval) ){return false;}
 	m->total_lag = 0;
 	m->max_correctable_lag = step_interval - m->min_step_interval;
-	m->last_corrected_high_time = micros();
+	m->last_corrected_high_time = current_time;
 #endif
 	digitalWrite(m->step_pin, LOW);
 	m->last_high_time = current_time;
