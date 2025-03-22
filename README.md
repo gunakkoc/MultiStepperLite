@@ -21,7 +21,7 @@ This library is the stand-alone motor control library. For a full implementation
 ## Getting Started
 
 1. Clone or download this repository.
-2. Copy the `MultiStepperLite` folder into your project's library directory.
+2. Include manually or follow the steps from [this Arduino Library Tutorial](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries/).
 3. Alternatively, install it through Arduino IDE's library.
 4. Include the library in your code:
     ```cpp
@@ -96,6 +96,7 @@ For advanced features refer to the examples provided in the `examples` folder.
 - Operation with endstops example: `examples/endstops/`
 - Time autocorrection example: `examples/time_autocorrection/`
 - Custom timekeeping example: `examples/custom_timekeeping/`
+- Setting stepper speed while running example: `examples/variable_speed/`
 
 ## Notes
 
