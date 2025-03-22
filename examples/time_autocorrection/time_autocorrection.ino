@@ -10,11 +10,9 @@
 #define motor0_enabledPin 8
 #define motor0_stepPin 2
 #define motor0_dirPin 5
-#define motor0_endstopPin 9
 #define motor1_enabledPin 7
 #define motor1_stepPin 3
 #define motor1_dirPin 6
-#define motor1_endstopPin 10
 
 bool led_last_state;
 unsigned long led_last_blink_time;
@@ -25,7 +23,6 @@ void setup(){
 	pinMode(motor0_enabledPin, OUTPUT);
 	pinMode(motor0_stepPin, OUTPUT);
 	pinMode(motor0_dirPin, OUTPUT);
-	pinMode(motor0_endstopPin, INPUT);
 	digitalWrite(motor0_stepPin, LOW);
 	digitalWrite(motor0_dirPin, LOW);
 	digitalWrite(motor0_enabledPin, LOW);
@@ -33,7 +30,6 @@ void setup(){
 	pinMode(motor1_enabledPin, OUTPUT);
 	pinMode(motor1_stepPin, OUTPUT);
 	pinMode(motor1_dirPin, OUTPUT);
-	pinMode(motor1_endstopPin, INPUT);
 	digitalWrite(motor1_stepPin, LOW);
 	digitalWrite(motor1_dirPin, LOW);
 	digitalWrite(motor1_enabledPin, LOW);
@@ -74,16 +70,6 @@ void setup(){
 }
 
 void loop(){
-	
-	if (digitalRead(motor0_endstopPin) == LOW){ //if end stop of motor 0 is triggered
-		//you can access remaining steps here via nsteps = steppers.get_remaining_steps(0);
-		steppers.stop(0); //stop motor 0, also resets remaining steps to 0
-	}
-	
-	if (digitalRead(motor1_endstopPin) == LOW){ //if end stop of motor 1 is triggered
-	    //you can access remaining steps here via nsteps = steppers.get_remaining_steps(1);
-		steppers.stop(1); //stop motor 1, also resets remaining steps to 0
-	}
 	
 	//with stepper_motor_set_autocorrect(true); both motors should complete at the same time that is after 10 seconds
 	//even with random blocking workloads in between.

@@ -22,11 +22,9 @@
 #define motor0_enabledPin 8
 #define motor0_stepPin 2
 #define motor0_dirPin 5
-#define motor0_endstopPin 9
 #define motor1_enabledPin 7
 #define motor1_stepPin 3
 #define motor1_dirPin 6
-#define motor1_endstopPin 10
 
 bool led_last_state;
 unsigned long led_last_blink_time;
@@ -37,7 +35,6 @@ void setup(){
 	pinMode(motor0_enabledPin, OUTPUT);
 	pinMode(motor0_stepPin, OUTPUT);
 	pinMode(motor0_dirPin, OUTPUT);
-	pinMode(motor0_endstopPin, INPUT);
 	digitalWrite(motor0_stepPin, LOW);
 	digitalWrite(motor0_dirPin, LOW);
 	digitalWrite(motor0_enabledPin, LOW);
@@ -45,7 +42,6 @@ void setup(){
 	pinMode(motor1_enabledPin, OUTPUT);
 	pinMode(motor1_stepPin, OUTPUT);
 	pinMode(motor1_dirPin, OUTPUT);
-	pinMode(motor1_endstopPin, INPUT);
 	digitalWrite(motor1_stepPin, LOW);
 	digitalWrite(motor1_dirPin, LOW);
 	digitalWrite(motor1_enabledPin, LOW);
@@ -54,9 +50,9 @@ void setup(){
 	pinMode(LED_BUILTIN, OUTPUT);
 	digitalWrite(LED_BUILTIN, LOW);
 	led_last_state = LOW;
-	led_last_blink_time = millis();
 
-
+	uint32_t now_ms = millis();
+	led_last_blink_time = now_ms;
     //Since the custom timekeeping variable is millis(), all time definitions will be in milliseconds
 
     steppers.set_min_pulse_width(1); //set minimum pulse width to 1 millisecond
@@ -69,11 +65,11 @@ void setup(){
 
     steppers.set_autocorrect(true); //enable time autocorrection
 	
-	//start motor 0, with 6 milliseconds delay between steps and with finite steps of 4294967295 (max number of steps)
-	steppers.start_finite(0, 10, 4294967295);
+	//start motor 0, with 6 milliseconds delay between steps and with finite steps of 1000.
+	steppers.start_finite(0, 10, 1000, now_ms);
 	
-	//start motor 1, with 8 milliseconds delay between steps and with finite steps of 4294967295 (max number of steps)
-	steppers.start_finite(1, 8, 4294967295);
+	//start motor 1, with 8 milliseconds delay between steps and with finite steps of 2000.
+	steppers.start_finite(1, 8, 2000, now_ms);
 	
 
 }
@@ -82,17 +78,6 @@ void loop(){
 
     uint32_t current_time_ms = millis(); //current milliseconds
 	
-	if (digitalRead(motor0_endstopPin) == LOW){ //if end stop of motor 0 is triggered
-		//you can access remaining steps here via nsteps = steppers.get_remaining_steps(0);
-		steppers.stop(0); //stop motor 0, also resets remaining steps to 0
-	}
-	
-	if (digitalRead(motor1_endstopPin) == LOW){ //if end stop of motor 1 is triggered
-	    //you can access remaining steps here via nsteps = steppers.get_remaining_steps(1);
-		steppers.stop(1); //stop motor 1, also resets remaining steps to 0
-	}
-	
-
     //do the tasks for the steppers, using time keeping variable in milliseconds
 	steppers.do_tasks(current_time_ms);
 	
