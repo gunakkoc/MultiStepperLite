@@ -5,9 +5,9 @@
 #include "MultiStepperLite.h"
 
 #if TIME_AUTOCORRECT_SUPPORT
-MultiStepperLite::MultiStepperLite(uint8_t count) : stepper_motor_count(count), _min_pulse_width(DEF_MIN_PULSE_WIDTH), _time_autocorrect_enabled(false){}
+MultiStepperLite::MultiStepperLite(uint8_t count) : _stepper_count(count), _min_pulse_width(DEF_MIN_PULSE_WIDTH), _time_autocorrect_enabled(false){}
 #else
-MultiStepperLite::MultiStepperLite(uint8_t count) : stepper_motor_count(count), _min_pulse_width(DEF_MIN_PULSE_WIDTH){}
+MultiStepperLite::MultiStepperLite(uint8_t count) : _stepper_count(count), _min_pulse_width(DEF_MIN_PULSE_WIDTH){}
 #endif
 
 #if TIME_AUTOCORRECT_SUPPORT

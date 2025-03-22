@@ -16,7 +16,7 @@
 
 bool led_last_state;
 unsigned long led_last_blink_time;
-steppers = MultiStepperLite(3); //initialize for 3 motors
+MultiStepperLite steppers(3); //initialize for 3 motors
 
 void setup(){
 	//X on the CNC shield
@@ -38,7 +38,7 @@ void setup(){
 	digitalWrite(motor2_stepPin, LOW);
 	digitalWrite(motor2_dirPin, LOW);
 
-	pinmode(motor_enabledPin, OUTPUT); //on the generic CNC shield, a single pin controls all motors' enabled pins
+	pinMode(motor_enabledPin, OUTPUT); //on the generic CNC shield, a single pin controls all motors' enabled pins
 	digitalWrite(motor_enabledPin, LOW);
 
 	pinMode(LED_BUILTIN, OUTPUT);
@@ -67,8 +67,8 @@ void loop(){
 	//this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
 	//without an argument, the function calls micros() internally.
 	
-	if (stepper.is_finished(1) && stepper.is_finished(2)){ //if both motor 1 and 2 are finished
-		stepper.stop(0); //also stop motor 0
+	if (steppers.is_finished(1) && steppers.is_finished(2)){ //if both motor 1 and 2 are finished
+		steppers.stop(0); //also stop motor 0
 		digitalWrite(LED_BUILTIN, HIGH);
 	} else if ((now_us - led_last_blink_time) > 1000000){ //else if 1 second has passed since the last change of LED_BUILTIN
 		led_last_state = !led_last_state;

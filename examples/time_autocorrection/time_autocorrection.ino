@@ -19,7 +19,7 @@
 bool led_last_state;
 unsigned long led_last_blink_time;
 
-steppers = MultiStepperLite(2); //initialize for 2 motors
+MultiStepperLite steppers(2); //initialize for 2 motors
 
 void setup(){
 	pinMode(motor0_enabledPin, OUTPUT);
@@ -63,7 +63,7 @@ void setup(){
 	//enable automatic time correction, so when a motor step is delayed, the next step will happen faster.
 	//this ensures the motor task ends on time even steppers.do_tasks() is called with irregular delays.
 	//but this costs some computation and trades-off uniform intervals between steps.
-	stepper.set_autocorrect(true);
+	steppers.set_autocorrect(true);
 	
 	//start motor 1, with 4000 microseconds delay between steps and with finite steps of 2500, should take 10 seconds
 	steppers.start_finite(1, 4000, 2500);

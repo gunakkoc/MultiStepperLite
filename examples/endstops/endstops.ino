@@ -19,7 +19,7 @@
 bool led_last_state;
 unsigned long led_last_blink_time;
 
-steppers = MultiStepperLite(2); //initialize for 2 motors
+MultiStepperLite steppers(2); //initialize for 2 motors
 
 void setup(){
 	pinMode(motor0_enabledPin, OUTPUT);
@@ -67,7 +67,7 @@ void loop(){
 		steppers.stop(1); //stop motor 1
 	}
 	
-	stepper.do_tasks();
+	steppers.do_tasks();
 	//alternatively, call steppers.do_tasks(now_us); //if you have your own microsecond timekeeping variable
 	//this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
 	//without an argument, the function calls micros() internally
