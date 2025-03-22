@@ -1,6 +1,3 @@
-// Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache License 2.0
-
 // This example demostrates the automatic time correction capability of the MultiStepperLite.
 // Even with blocking heavy workloads in the main loop, the motors will try to catch up.
 // The motors will never exceed maximum motor speed, dictated via set_min_step_interval() function.

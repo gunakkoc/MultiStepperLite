@@ -1,6 +1,3 @@
-// Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache 2.0
-
 //	A minimal demostration of running 2 motors indepedently and simultaneously.
 //	While blinking the LED until the motors finish their tasks or until the end stops are triggered.
 //	No interrupts or delay functions are used. So that the user can prioritize tasks freely.

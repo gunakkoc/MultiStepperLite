@@ -1,6 +1,3 @@
-// Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache License 2.0
-
 // Run 2 motors concurrently with MultiStepperLite
 
 #include "MultiStepperLite.h"

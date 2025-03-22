@@ -1,6 +1,3 @@
-// Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache License 2.0
-
 // A minimal demostration of running 3 motors indepedently and simultaneously using a generic CNC shield.
 // While blinking the LED until the motors finish their tasks.
 // No interrupts or delay functions are used. So that the user can prioritize tasks freely.

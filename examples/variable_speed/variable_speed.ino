@@ -1,6 +1,3 @@
-// Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache License 2.0
-
 // Change the speed of a running stepper motor on-the-fly.
 
 #include "MultiStepperLite.h"

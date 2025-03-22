@@ -1,6 +1,3 @@
-// Author Gun Deniz Akkoc (2025) | github.com/gunakkoc/MultiStepperLite
-// License: Apache 2.0
-
 // An example of using MultiStepperLite with custom timekeeping.
 
 // Without the extra arguments, MultiStepperLite uses micros() for timekeeping by default.
