@@ -53,8 +53,8 @@ void setup(){
 	//min step interval must not be smaller than (min_pulse_width * 2)
 	//min_pulse_width default is set to 2us, consult stepper driver datasheet for the minimum pulse width
 	//use steppers.set_min_pulse_width(x) to adjust
-	steppers.set_min_step_interval(0, 3); //set minimum step interval for motor 0 to 3 microseconds
-	steppers.set_min_step_interval(1, 3); //set minimum step interval for motor 1 to 3 microseconds
+	steppers.set_min_step_interval(0, 1000); //set minimum step interval for motor 0 to 1000 microseconds
+	steppers.set_min_step_interval(1, 1000); //set minimum step interval for motor 1 to 1000 microseconds
 	
 	//enable automatic time correction, so when a motor step is delayed, the next step will happen faster.
 	//this ensures the motor task ends on time even steppers.do_tasks() is called with irregular delays.
