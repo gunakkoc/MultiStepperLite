@@ -48,7 +48,7 @@ bool motor0_finish_signalled = false;
 void setup(){
     Serial.begin(9600);
 
-    //enable motor's and set directions
+    //enable motors and set directions
     pinMode(motor0_enabledPin, OUTPUT);
     pinMode(motor0_dirPin, OUTPUT);
     digitalWrite(motor0_stepPin, LOW);
