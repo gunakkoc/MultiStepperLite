@@ -19,13 +19,13 @@ void setup(){
     //enable both motors and set directions
     pinMode(motor0_enabledPin, OUTPUT);
     pinMode(motor0_dirPin, OUTPUT);
-    digitalWrite(motor0_stepPin, LOW);
     digitalWrite(motor0_enabledPin, LOW);
+    digitalWrite(motor0_dirPin, LOW);
 
     pinMode(motor1_enabledPin, OUTPUT);
     pinMode(motor1_dirPin, OUTPUT);
-    digitalWrite(motor1_dirPin, LOW);
     digitalWrite(motor1_enabledPin, LOW);
+    digitalWrite(motor1_dirPin, LOW);
 
     //initialize each of 2 motors with their index and their step pin
     steppers.init_stepper(0, motor0_stepPin);
