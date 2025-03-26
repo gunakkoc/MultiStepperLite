@@ -20,13 +20,13 @@ void setup(){
     //enable motor's and set directions
     pinMode(motor0_enabledPin, OUTPUT);
     pinMode(motor0_dirPin, OUTPUT);
-    digitalWrite(motor0_stepPin, LOW);
     digitalWrite(motor0_enabledPin, LOW);
+    digitalWrite(motor0_dirPin, LOW);
 
     pinMode(motor1_enabledPin, OUTPUT);
     pinMode(motor1_dirPin, OUTPUT);
-    digitalWrite(motor1_dirPin, LOW);
     digitalWrite(motor1_enabledPin, LOW);
+    digitalWrite(motor1_dirPin, LOW);
 
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
