@@ -73,6 +73,7 @@ public:
 #endif
 
 private:
+	inline void _do_tasks(uint32_t current_time); //internal function to handle motor stepping
 	bool _start_motor(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint8_t finite_mode, uint32_t current_time);
 	uint8_t _stepper_count;
 	uint32_t _min_pulse_width;

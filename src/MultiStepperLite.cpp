@@ -33,7 +33,7 @@ MultiStepperLite::MultiStepperLite(uint8_t count) : _stepper_count(count), _min_
 // The maximum correction is calculated as max_correctable_lag = target_step_interval - min_step_interval.
 // Hence, max_correctable_lag is calculated when motor is started via start_finite or start_continuous.
 // This strategy allows dynamically adopting to disruptions of frequent calling of the task function.
-void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
+inline void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 	for (uint8_t i=0; i<_stepper_count; i++){
 		StepperMotor_t *m = &_stepper_motors[i];
 		if (!m->running){
@@ -152,7 +152,7 @@ void MultiStepperLite::set_step_interval(uint8_t motor_index, uint32_t step_inte
 // The minimum pulse width is enforced to ensure the stepper driver registers the change.
 // Moreover, the task aims to pull the step pin back to LOW after the minimum pulse width.
 // Motor always finishes with LOW on the step pin and enough time passed for it to be registered.
-void MultiStepperLite::do_tasks(uint32_t current_time) {
+inline void MultiStepperLite::_do_tasks(uint32_t current_time) {
 #if TIME_AUTOCORRECT_SUPPORT
 	if (_time_autocorrect_enabled){
 		_do_tasks_autocorrect(current_time); //route to the autocorrect version
@@ -222,8 +222,12 @@ void MultiStepperLite::do_tasks(uint32_t current_time) {
 	}
 }
 
+void MultiStepperLite::do_tasks(uint32_t current_time){
+	_do_tasks(current_time);
+}
+
 void MultiStepperLite::do_tasks(){
-	do_tasks(micros());
+	_do_tasks(micros());
 }
 
 void MultiStepperLite::set_stepper_count(uint8_t motor_count){
