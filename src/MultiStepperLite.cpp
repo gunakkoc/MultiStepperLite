@@ -34,9 +34,11 @@ MultiStepperLite::MultiStepperLite(uint8_t count) : _stepper_count(count), _min_
 // Hence, max_correctable_lag is calculated when motor is started via start_finite or start_continuous.
 // This strategy allows dynamically adopting to disruptions of frequent calling of the task function.
 inline void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
-	for (uint8_t i=0; i<_stepper_count; i++){
-		StepperMotor_t *m = &_stepper_motors[i];
+	StepperMotor_t *m = _stepper_motors;
+	uint8_t i = _stepper_count;
+	while (i--){
 		if (!m->running){
+			++m;
 			continue; //if not running, move on to the next motor
 		}
 		if (m->steps){ //if remaning step count > 0
@@ -45,6 +47,7 @@ inline void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 				//for slow 8 bit processors, no need for minimum pulse width checking
 				digitalWrite(m->step_pin, LOW);
 				m->last_pin_state = false;
+				++m;
 				continue; //HIGH to LOW is done, move on to the next motor
 #else
 				//for 32-bit faster processors, minimum pulse width is enforced
@@ -53,8 +56,10 @@ inline void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 					digitalWrite(m->step_pin, LOW);
 					m->last_low_time = current_time;
 					m->last_pin_state = false;
+					++m;
 					continue; //HIGH to LOW is done, move on to the next motor
 				}
+				++m;
 				continue; //else move on to the next motor (until _min_pulse_width elapses)
 #endif
 			}
@@ -62,7 +67,10 @@ inline void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 			if (_motor_delta_time >= m->step_interval){ //if step interval time has passed since the last stepping
 #if SLOW_PROCESSOR == 0
 				//need to check for minimum pulse width for faster processors
-				if ((current_time - m->last_low_time) < _min_pulse_width){continue;} //if minimum time has not passed since the last LOW
+				if ((current_time - m->last_low_time) < _min_pulse_width){
+					++m;
+					continue;
+				} //if minimum time has not passed since the last LOW
 #endif
 				digitalWrite(m->step_pin, HIGH); //take a step by pulling from LOW to HIGH
 				m->last_high_time = current_time;
@@ -81,8 +89,10 @@ inline void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 				} else {
 					m->last_corrected_high_time = m->last_high_time; //no correction needed
 				}
+				++m;
 				continue; //stepping took place, move on to the next motor
 			}
+			++m;
 			continue; //else move on to the next motor (until step_interval elapses)
 		}
 		//No remaining steps; ensure the motor is stopped gracefully.
@@ -91,21 +101,27 @@ inline void MultiStepperLite::_do_tasks_autocorrect(uint32_t current_time) {
 		digitalWrite(m->step_pin, LOW);
 		m->last_pin_state = false;
 		m->running = false;
+		++m;
+		continue; //HIGH to LOW is done, move on to the next motor
 #else
 		if (m->last_pin_state){ //if the last pin state is HIGH
 			if ((current_time - m->last_high_time) >= _min_pulse_width){ //if enough time has passed for HIGH to be registered by the motor drive
 				digitalWrite(m->step_pin, LOW); //pull LOW
 				m->last_pin_state = false;
 				m->last_low_time = current_time;
+				++m;
 				continue; //HIGH to LOW is done, move on to the next motor
 			}
+			++m;
 			continue; //else move on to the next motor (until _min_pulse_width elapses)
 		}
 		if ((current_time - m->last_low_time) >= _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
 			m->running = false; //now we can signal the motor is finished.
+			++m;
 			continue; //move on to the next motor
 		}
-		//else LOW to be registered by the motor driver will be waited.
+		++m;
+		continue; //else LOW to be registered by the motor driver will be waited.
 #endif
 	}
 }
@@ -123,11 +139,13 @@ void MultiStepperLite::set_min_step_interval(uint8_t motor_index, uint32_t min_i
 void MultiStepperLite::set_autocorrect(bool autocorrect){
 	//if switching from disabled to enabled, handle last_corrected_high_time for running motors
 	if (autocorrect && !_time_autocorrect_enabled){
-		for (uint8_t i=0; i<_stepper_count; i++){
-			StepperMotor_t *m = &_stepper_motors[i];
+		uint8_t i = _stepper_count;
+		StepperMotor_t *m = _stepper_motors;
+		while(i--){
 			if (m->running){
 				m->last_corrected_high_time = m->last_high_time;
 			}
+			m++;
 		}
 	}
 	_time_autocorrect_enabled = autocorrect;
@@ -159,9 +177,11 @@ inline void MultiStepperLite::_do_tasks(uint32_t current_time) {
 		return;
 	}
 #endif
-	for (uint8_t i=0; i<_stepper_count; i++){
-		StepperMotor_t *m = &_stepper_motors[i];
+	uint8_t i = _stepper_count;
+	StepperMotor_t *m = _stepper_motors;
+	while(i--){
 		if (!m->running){
+			++m;
 			continue; //if not running, move on to the next motor
 		}
 		if (m->steps){ //if remaning step count > 0
@@ -170,6 +190,7 @@ inline void MultiStepperLite::_do_tasks(uint32_t current_time) {
 				//for slow 8 bit processors, no need for minimum pulse width checking
 				digitalWrite(m->step_pin, LOW);
 				m->last_pin_state = false;
+				++m;
 				continue; //HIGH to LOW is done, move on to the next motor
 #else
 				//for 32-bit faster processors, minimum pulse width is enforced
@@ -178,22 +199,29 @@ inline void MultiStepperLite::_do_tasks(uint32_t current_time) {
 					digitalWrite(m->step_pin, LOW);
 					m->last_low_time = current_time;
 					m->last_pin_state = false;
+					++m;
 					continue; //HIGH to LOW is done, move on to the next motor
 				}
+				++m;
 				continue; //else move on to the next motor (until _min_pulse_width elapses)
 #endif
 			}
 			if ((current_time - m->last_high_time) >= m->step_interval){ //if step interval time has passed since the last HIGH
 #if SLOW_PROCESSOR == 0
 				//need to check for minimum pulse width for faster processors
-				if ((current_time - m->last_low_time) < _min_pulse_width){continue;} //if minimum time has not passed since the last LOW
+				if ((current_time - m->last_low_time) < _min_pulse_width){
+					++m;
+					continue;
+				} //if minimum time has not passed since the last LOW
 #endif
 				digitalWrite(m->step_pin, HIGH); //take a step by pulling from LOW to HIGH
 				m->last_high_time = current_time;
 				m->last_pin_state = true;
 				m->steps -= m->finite_mode; //if finite mode, then decrease by 1, continuous mode doesn't decrease
+				++m;
 				continue; //stepping took place, move on to the next motor
 			}
+			++m;
 			continue; //else move on to the next motor (until step_interval elapses)
 		}
 		//If no remaining steps then ensure the motor is stopped gracefully.
@@ -202,6 +230,7 @@ inline void MultiStepperLite::_do_tasks(uint32_t current_time) {
 		digitalWrite(m->step_pin, LOW);
 		m->last_pin_state = false;
 		m->running = false;
+		++m;
 		continue; //HIGH to LOW is done, move on to the next motor
 #else
 		if (m->last_pin_state){ //if the last pin state is HIGH
@@ -209,15 +238,19 @@ inline void MultiStepperLite::_do_tasks(uint32_t current_time) {
 				digitalWrite(m->step_pin, LOW);
 				m->last_low_time = current_time;
 				m->last_pin_state = false;
+				++m;
 				continue; //HIGH to LOW is done, move on to the next motor
 			}
+			++m;
 			continue; //else move on to the next motor (until _min_pulse_width elapses)
 		}
 		if ((current_time - m->last_low_time) >= _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
 			m->running = false; //now we can signal the motor is finished.
+			++m;
 			continue; //move on to the next motor
 		}
-		// continue; //else LOW to be registered by the motor driver will be waited.
+		++m;
+		continue; //else LOW to be registered by the motor driver will be waited.
 #endif
 	}
 }
