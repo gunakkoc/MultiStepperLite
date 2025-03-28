@@ -88,25 +88,6 @@ private:
 	bool _start_motor(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint8_t finite_mode, uint32_t current_time);
 	uint8_t _stepper_count;
 	uint32_t _min_pulse_width;
-	typedef struct { //17 bytes
-		int step_pin;
-		bool running;
-		bool last_pin_state;
-		uint8_t finite_mode; //1 for finite mode, 0 for continuous mode
-		uint32_t step_interval;
-		uint32_t steps; //keeps track of remaining number of steps (if finite mode)
-		uint32_t last_high_time;
-#if SLOW_PROCESSOR == 0 //+4 bytes
-		uint32_t last_low_time; 
-#endif
-#if TIME_AUTOCORRECT_SUPPORT //+16 bytes
-		uint32_t last_corrected_high_time;
-		uint32_t total_lag;
-		uint32_t min_step_interval;
-		uint32_t max_correctable_lag;
-#endif
-	} StepperMotor_t;
-	StepperMotor_t _stepper_motors[MAX_MOTOR_COUNT];
 #if TIME_AUTOCORRECT_SUPPORT
 	uint32_t _motor_delta_time;
 	bool _time_autocorrect_enabled;

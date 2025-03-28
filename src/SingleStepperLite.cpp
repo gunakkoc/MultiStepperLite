@@ -17,6 +17,28 @@
 #include <Arduino.h>
 #include "SingleStepperLite.h"
 
+namespace {
+	typedef struct { //17 bytes
+		int step_pin;
+		bool running;
+		bool last_pin_state;
+		uint8_t finite_mode; //1 for finite mode, 0 for continuous mode
+		uint32_t step_interval;
+		uint32_t steps; //keeps track of remaining number of steps (if finite mode)
+		uint32_t last_high_time;
+	#if SLOW_PROCESSOR == 0 //+4 bytes
+		uint32_t last_low_time; 
+	#endif
+	#if TIME_AUTOCORRECT_SUPPORT //+16 bytes
+		uint32_t last_corrected_high_time;
+		uint32_t total_lag;
+		uint32_t min_step_interval;
+		uint32_t max_correctable_lag;
+	#endif
+	} StepperMotor_t;
+	StepperMotor_t _m;
+}
+
 #if TIME_AUTOCORRECT_SUPPORT
 SingleStepperLite::SingleStepperLite() :  _min_pulse_width(DEF_MIN_PULSE_WIDTH), _time_autocorrect_enabled(false){}
 #else
