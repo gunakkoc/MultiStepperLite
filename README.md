@@ -78,7 +78,7 @@ void loop(){
     //this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
     //without an argument, the function calls micros() internally
 
-    if (steppers.if_finished(0)){ //if motor 0 completed all the steps
+    if (steppers.is_finished(0)){ //if motor 0 completed all the steps
         if (!motor0_finish_signalled) { //if end of motor task is not signalled already
             Serial.println("Motor 0 is finished.");
             motor0_finish_signalled = true;
