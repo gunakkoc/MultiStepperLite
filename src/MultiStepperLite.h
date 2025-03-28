@@ -19,10 +19,10 @@
 
 #include <Arduino.h>
 
-// Can define current time with an atomic 32-bit counter of a timer
+// Can define current motor time with an atomic 32-bit counter of a timer
 // such as TIM1->CNT on STM32
 // EX:
-// #define current_time TIM1->CNT
+// #define current_motor_time TIM1->CNT
 
 #ifndef SLOW_PROCESSOR
 #ifdef ARDUINO_ARCH_AVR
@@ -61,11 +61,11 @@ public:
 	void init_stepper(uint8_t motor_index, int step_pin);
 	bool start_finite(uint8_t motor_index, uint32_t step_interval, uint32_t step_count);
 	bool start_continuous(uint8_t motor_index, uint32_t step_interval);
-#ifndef current_time
-	void do_tasks(uint32_t current_time); //only to be used when providing your own 32-bit timekeeping variable
-	void resume(uint8_t motor_index, uint32_t current_time); //only to be used when providing your own 32-bit timekeeping variable
-	bool start_continuous(uint8_t motor_index, uint32_t step_interval, uint32_t current_time); //only to be used when providing your own 32-bit timekeeping variable
-	bool start_finite(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint32_t current_time); //only to be used when providing your own 32-bit timekeeping variable
+#ifndef current_motor_time
+	void do_tasks(uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
+	void resume(uint8_t motor_index, uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
+	bool start_continuous(uint8_t motor_index, uint32_t step_interval, uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
+	bool start_finite(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
 #endif
 	void stop(uint8_t motor_index);
 	void pause(uint8_t motor_index);
@@ -80,19 +80,20 @@ public:
 #endif
 
 private:
-#ifndef current_time
-	inline void _do_tasks(uint32_t current_time); //internal function to handle motor stepping
+#ifndef current_motor_time
+	inline void _do_tasks(uint32_t current_motor_time); //internal function to handle motor stepping
+	bool _start_motor(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint8_t finite_mode, uint32_t current_motor_time);
 #else
 	inline void _do_tasks(); //internal function to handle motor stepping
+	bool _start_motor(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint8_t finite_mode);
 #endif
-	bool _start_motor(uint8_t motor_index, uint32_t step_interval, uint32_t step_count, uint8_t finite_mode, uint32_t current_time);
 	uint8_t _stepper_count;
 	uint32_t _min_pulse_width;
 #if TIME_AUTOCORRECT_SUPPORT
 	uint32_t _motor_delta_time;
 	bool _time_autocorrect_enabled;
-#ifndef current_time
-	void _do_tasks_autocorrect(uint32_t current_time);
+#ifndef current_motor_time
+	void _do_tasks_autocorrect(uint32_t current_motor_time);
 #else
 	void _do_tasks_autocorrect();
 #endif

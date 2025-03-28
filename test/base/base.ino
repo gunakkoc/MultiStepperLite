@@ -1,6 +1,6 @@
 #define SLOW_PROCESSOR 1
 #define TIME_AUTOCORRECT_SUPPORT 1
-// #define current_time micros()
+// #define current_motor_time micros()
 
 #include "SingleStepperLite.h"
 #include "MultiStepperLite.h"
@@ -15,34 +15,34 @@ uint32_t s_endus = 0;
 uint32_t m0_endus = 0;
 uint32_t m1_endus = 0;
 void setup() {
-    Serial.begin(115200);
-    s.init_stepper(2);
-    s.set_min_pulse_width(1);
-    s.set_min_step_interval(3);
-    s.set_autocorrect(false);
+  Serial.begin(115200);
+  s.init_stepper(2);
+  s.set_min_pulse_width(1);
+  s.set_min_step_interval(3);
+  s.set_autocorrect(false);
 
-    m.init_stepper(0,3);
-    m.init_stepper(1,4);
-    m.set_min_pulse_width(1);
-    m.set_min_step_interval(0,3);
-    m.set_min_step_interval(1,3);
-    m.set_autocorrect(false);
+  m.init_stepper(0,3);
+  m.init_stepper(1,4);
+  m.set_min_pulse_width(1);
+  m.set_min_step_interval(0,3);
+  m.set_min_step_interval(1,3);
+  m.set_autocorrect(false);
 
-    bool result = true;
-    s_startus = micros();
-    result = result & s.start_finite(20,500);
+  bool result = true;
+  s_startus = micros();
+  result = result & s.start_finite(5000,2000);
 
-    m0_startus = micros();
-    result = result & m.start_finite(0,20,500);
+  m0_startus = micros();
+  result = result & m.start_finite(0,5000,2000);
 
-    m1_startus = micros();
-    result = result & m.start_finite(1,20,300);
+  m1_startus = micros();
+  result = result & m.start_finite(1,6000,1000);
 
-    if (result){
-        Serial.println("Started.");
-    } else {
-        Serial.println("Failed.");
-    }
+  if (result){
+      Serial.println("Started.");
+  } else {
+      Serial.println("Failed.");
+  }
 }
 
 void loop() {

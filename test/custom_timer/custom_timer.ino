@@ -1,6 +1,6 @@
 #define SLOW_PROCESSOR 1
 #define TIME_AUTOCORRECT_SUPPORT 1
-#define current_time millis()
+#define current_motor_time millis()
 
 #include "SingleStepperLite.h"
 #include "MultiStepperLite.h"
@@ -30,13 +30,13 @@ void setup() {
 
     bool result = true;
     s_startus = micros();
-    result = result & s.start_finite(20,500);
-
+    result = result & s.start_finite(5,2000);
+  
     m0_startus = micros();
-    result = result & m.start_finite(0,20,500);
-
+    result = result & m.start_finite(0,5,2000);
+  
     m1_startus = micros();
-    result = result & m.start_finite(1,20,300);
+    result = result & m.start_finite(1,6,1000);
 
     if (result){
         Serial.println("Started.");
