@@ -7,6 +7,7 @@
 #######################################
 
 MultiStepperLite	KEYWORD1
+SingleStepperLite   KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
