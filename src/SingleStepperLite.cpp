@@ -46,7 +46,7 @@ SingleStepperLite::SingleStepperLite() :  _min_pulse_width(DEF_MIN_PULSE_WIDTH){
 #endif
 
 #if TIME_AUTOCORRECT_SUPPORT
-// Here, current_time is used to calculate the time elapsed since the last motor step.
+// Here, current_motor_time is used to calculate the time elapsed since the last motor step.
 // If this delta time is equal to greater than the given step interval, the motor is stepped.
 // Furthermore, if the delta time is greater than the step interval, the exact timing is missed.
 // The lag is calculated as lag = delta_time - step_interval
@@ -56,8 +56,8 @@ SingleStepperLite::SingleStepperLite() :  _min_pulse_width(DEF_MIN_PULSE_WIDTH){
 // Hence, max_correctable_lag is calculated when motor is started via start_finite or start_continuous.
 // This strategy allows dynamically adopting to disruptions of frequent calling of the task function.
 
-#ifndef current_time
-inline void SingleStepperLite::_do_task_autocorrect(uint32_t current_time) {
+#ifndef current_motor_time
+inline void SingleStepperLite::_do_task_autocorrect(uint32_t current_motor_time) {
 #else
 inline void SingleStepperLite::_do_task_autocorrect() {
 #endif
@@ -74,26 +74,26 @@ inline void SingleStepperLite::_do_task_autocorrect() {
 #else
 			//for 32-bit faster processors, minimum pulse width is enforced
 			//thanksfully, these extra 32-bit operations are not costly in this case.
-			if ((current_time - _m.last_high_time) >= _min_pulse_width){ //if minimum time has passed since the last HIGH
+			if ((current_motor_time - _m.last_high_time) >= _min_pulse_width){ //if minimum time has passed since the last HIGH
 				digitalWrite(_m.step_pin, LOW);
-				_m.last_low_time = current_time;
+				_m.last_low_time = current_motor_time;
 				_m.last_pin_state = false;
 				return; //HIGH to LOW is done, move on to the next motor
 			}
 			return; //else move on to the next motor (until _min_pulse_width elapses)
 #endif
 		}
-		_motor_delta_time = current_time - _m.last_corrected_high_time; //the time elapsed since the last (corrected) stepping time
+		_motor_delta_time = current_motor_time - _m.last_corrected_high_time; //the time elapsed since the last (corrected) stepping time
 		if (_motor_delta_time >= _m.step_interval){ //if step interval time has passed since the last stepping
 #if SLOW_PROCESSOR == 0
 			//need to check for minimum pulse width for faster processors
-			if ((current_time - _m.last_low_time) < _min_pulse_width){
+			if ((current_motor_time - _m.last_low_time) < _min_pulse_width){
 				return;
 			} //if minimum time has not passed since the last LOW
 #endif
 			digitalWrite(_m.step_pin, HIGH); //take a step by pulling from LOW to HIGH
-			_m.last_high_time = current_time;
-			_m.last_corrected_high_time = current_time;
+			_m.last_high_time = current_motor_time;
+			_m.last_corrected_high_time = current_motor_time;
 			_m.last_pin_state = true;
 			if (_m.finite_mode) { //if finite mode, then decrease by 1, continuous mode doesn't decrease
 				--_m.steps;
@@ -123,15 +123,15 @@ inline void SingleStepperLite::_do_task_autocorrect() {
 	return; //HIGH to LOW is done, move on to the next motor
 #else
 	if (_m.last_pin_state){ //if the last pin state is HIGH
-		if ((current_time - _m.last_high_time) >= _min_pulse_width){ //if enough time has passed for HIGH to be registered by the motor drive
+		if ((current_motor_time - _m.last_high_time) >= _min_pulse_width){ //if enough time has passed for HIGH to be registered by the motor drive
 			digitalWrite(_m.step_pin, LOW); //pull LOW
 			_m.last_pin_state = false;
-			_m.last_low_time = current_time;
+			_m.last_low_time = current_motor_time;
 			return; //HIGH to LOW is done, move on to the next motor
 		}
 		return; //else move on to the next motor (until _min_pulse_width elapses)
 	}
-	if ((current_time - _m.last_low_time) >= _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
+	if ((current_motor_time - _m.last_low_time) >= _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
 		_m.running = false; //now we can signal the motor is finished.
 		return; //move on to the next motor
 	}
@@ -166,21 +166,21 @@ void SingleStepperLite::set_step_interval(uint32_t step_interval){
 	_m.step_interval = step_interval;
 }
 
-// Here, current_time is used to calculate the time elapsed since the last motor step.
+// Here, current_motor_time is used to calculate the time elapsed since the last motor step.
 // If this delta time is equal to greater than the given step interval, the motor is stepped.
 // Each stepping is triggered by pulling the step pin from LOW to HIGH.
 // The minimum pulse width is enforced to ensure the stepper driver registers the change.
 // Moreover, the task aims to pull the step pin back to LOW after the minimum pulse width.
 // Motor always finishes with LOW on the step pin and enough time passed for it to be registered.
-#ifndef current_time
-inline void SingleStepperLite::_do_task(uint32_t current_time) {
+#ifndef current_motor_time
+inline void SingleStepperLite::_do_task(uint32_t current_motor_time) {
 #else
 inline void SingleStepperLite::_do_task() {
 #endif
 #if TIME_AUTOCORRECT_SUPPORT
 	if (_time_autocorrect_enabled){
-#ifndef current_time
-		_do_task_autocorrect(current_time); //route to the autocorrect version
+#ifndef current_motor_time
+		_do_task_autocorrect(current_motor_time); //route to the autocorrect version
 #else
 		_do_task_autocorrect() //route to the autocorrect version
 #endif
@@ -200,24 +200,24 @@ inline void SingleStepperLite::_do_task() {
 #else
 			//for 32-bit faster processors, minimum pulse width is enforced
 			//thanksfully, these extra 32-bit operations are not costly in this case.
-			if ((current_time - _m.last_high_time) >= _min_pulse_width){ //if minimum time has passed since the last HIGH
+			if ((current_motor_time - _m.last_high_time) >= _min_pulse_width){ //if minimum time has passed since the last HIGH
 				digitalWrite(_m.step_pin, LOW);
-				_m.last_low_time = current_time;
+				_m.last_low_time = current_motor_time;
 				_m.last_pin_state = false;
 				return; //HIGH to LOW is done, move on to the next motor
 			}
 			return; //else move on to the next motor (until _min_pulse_width elapses)
 #endif
 		}
-		if ((current_time - _m.last_high_time) >= _m.step_interval){ //if step interval time has passed since the last HIGH
+		if ((current_motor_time - _m.last_high_time) >= _m.step_interval){ //if step interval time has passed since the last HIGH
 #if SLOW_PROCESSOR == 0
 			//need to check for minimum pulse width for faster processors
-			if ((current_time - _m.last_low_time) < _min_pulse_width){
+			if ((current_motor_time - _m.last_low_time) < _min_pulse_width){
 				return;
 			} //if minimum time has not passed since the last LOW
 #endif
 			digitalWrite(_m.step_pin, HIGH); //take a step by pulling from LOW to HIGH
-			_m.last_high_time = current_time;
+			_m.last_high_time = current_motor_time;
 			_m.last_pin_state = true;
 			if (_m.finite_mode) { //if finite mode, then decrease by 1, continuous mode doesn't decrease
 				--_m.steps;
@@ -235,15 +235,15 @@ inline void SingleStepperLite::_do_task() {
 	return; //HIGH to LOW is done, move on to the next motor
 #else
 	if (_m.last_pin_state){ //if the last pin state is HIGH
-		if ((current_time - _m.last_high_time) >= _min_pulse_width){ //if minimum time has passed for stepper driver to register a change 
+		if ((current_motor_time - _m.last_high_time) >= _min_pulse_width){ //if minimum time has passed for stepper driver to register a change 
 			digitalWrite(_m.step_pin, LOW);
-			_m.last_low_time = current_time;
+			_m.last_low_time = current_motor_time;
 			_m.last_pin_state = false;
 			return; //HIGH to LOW is done, move on to the next motor
 		}
 		return; //else move on to the next motor (until _min_pulse_width elapses)
 	}
-	if ((current_time - _m.last_low_time) >= _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
+	if ((current_motor_time - _m.last_low_time) >= _min_pulse_width){ //if enough time has passed for LOW to be registered by the motor driver
 		_m.running = false; //now we can signal the motor is finished.
 		return; //move on to the next motor
 	}
@@ -251,14 +251,14 @@ inline void SingleStepperLite::_do_task() {
 #endif
 }
 
-#ifndef current_time
-void SingleStepperLite::do_task(uint32_t current_time){
-	_do_task(current_time);
+#ifndef current_motor_time
+void SingleStepperLite::do_task(uint32_t current_motor_time){
+	_do_task(current_motor_time);
 }
 #endif
 
 void SingleStepperLite::do_task(){
-#ifndef current_time
+#ifndef current_motor_time
 	_do_task(micros());
 #else
 	_do_task();	
@@ -290,8 +290,8 @@ void SingleStepperLite::init_stepper(int step_pin){
 // #endif
 }
 
-#ifndef current_time
-bool SingleStepperLite::_start_motor(uint32_t step_interval, uint32_t step_count, uint8_t finite_mode, uint32_t current_time){
+#ifndef current_motor_time
+bool SingleStepperLite::_start_motor(uint32_t step_interval, uint32_t step_count, uint8_t finite_mode, uint32_t current_motor_time){
 #else
 bool SingleStepperLite::_start_motor(uint32_t step_interval, uint32_t step_count, uint8_t finite_mode){
 #endif
@@ -300,12 +300,12 @@ bool SingleStepperLite::_start_motor(uint32_t step_interval, uint32_t step_count
 	if (_time_autocorrect_enabled && (step_interval < _m.min_step_interval) ){return false;}
 	_m.total_lag = 0;
 	_m.max_correctable_lag = step_interval - _m.min_step_interval;
-	_m.last_corrected_high_time = current_time;
+	_m.last_corrected_high_time = current_motor_time;
 #endif
 	digitalWrite(_m.step_pin, LOW);
-	_m.last_high_time = current_time;
+	_m.last_high_time = current_motor_time;
 #if SLOW_PROCESSOR == 0
-	_m.last_low_time = current_time;
+	_m.last_low_time = current_motor_time;
 #endif
 	_m.last_pin_state = false;
 	_m.steps = step_count;
@@ -315,28 +315,28 @@ bool SingleStepperLite::_start_motor(uint32_t step_interval, uint32_t step_count
 	return true;
 }
 
-#ifndef current_time
-bool SingleStepperLite::start_finite(uint32_t step_interval, uint32_t step_count, uint32_t current_time){
-	return _start_motor(step_interval, step_count, 1, current_time);
+#ifndef current_motor_time
+bool SingleStepperLite::start_finite(uint32_t step_interval, uint32_t step_count, uint32_t current_motor_time){
+	return _start_motor(step_interval, step_count, 1, current_motor_time);
 }
 #endif
 
 bool SingleStepperLite::start_finite(uint32_t step_interval, uint32_t step_count){
-#ifndef current_time
+#ifndef current_motor_time
 	return _start_motor(step_interval, step_count, 1, micros());
 #else
 	return _start_motor(step_interval, step_count, 1);
 #endif
 }
 
-#ifndef current_time
-bool SingleStepperLite::start_continuous(uint32_t step_interval, uint32_t current_time){
-	return _start_motor(step_interval, 1, 0, current_time);
+#ifndef current_motor_time
+bool SingleStepperLite::start_continuous(uint32_t step_interval, uint32_t current_motor_time){
+	return _start_motor(step_interval, 1, 0, current_motor_time);
 }
 #endif
 
 bool SingleStepperLite::start_continuous(uint32_t step_interval){
-#ifndef current_time
+#ifndef current_motor_time
 	return _start_motor(step_interval, 1, 0, micros());
 #else
 	return _start_motor(step_interval, 1, 0);
@@ -352,31 +352,31 @@ void SingleStepperLite::pause(){ //this will pause the motor immediately
 	_m.running = false;
 }
 
-#ifndef current_time
+#ifndef current_motor_time
 void SingleStepperLite::resume(){
 	resume(micros());
 }
 
-void SingleStepperLite::resume(uint32_t current_time){
-	_m.last_high_time = current_time;
+void SingleStepperLite::resume(uint32_t current_motor_time){
+	_m.last_high_time = current_motor_time;
 #if TIME_AUTOCORRECT_SUPPORT
-	_m.last_corrected_high_time = current_time;
+	_m.last_corrected_high_time = current_motor_time;
 	_m.total_lag = 0;
 #endif
 #if SLOW_PROCESSOR == 0
-	_m.last_low_time = current_time;
+	_m.last_low_time = current_motor_time;
 #endif
 	_m.running = true;
 }
 #else
 void SingleStepperLite::resume(){
-	_m.last_high_time = current_time;
+	_m.last_high_time = current_motor_time;
 #if TIME_AUTOCORRECT_SUPPORT
-	_m.last_corrected_high_time = current_time;
+	_m.last_corrected_high_time = current_motor_time;
 	_m.total_lag = 0;
 #endif
 #if SLOW_PROCESSOR == 0
-	_m.last_low_time = current_time;
+	_m.last_low_time = current_motor_time;
 #endif
 	_m.running = true;
 }
