@@ -57,9 +57,9 @@ SingleStepperLite::SingleStepperLite() :  _min_pulse_width(DEF_MIN_PULSE_WIDTH){
 // This strategy allows dynamically adopting to disruptions of frequent calling of the task function.
 
 #ifndef current_motor_time
-inline void SingleStepperLite::_do_task_autocorrect(uint32_t current_motor_time) {
+inline void SingleStepperLite::_do_tasks_autocorrect(uint32_t current_motor_time) {
 #else
-inline void SingleStepperLite::_do_task_autocorrect() {
+inline void SingleStepperLite::_do_tasks_autocorrect() {
 #endif
 	if (_m.running){
 		return; //if not running, move on to the next motor
@@ -173,16 +173,16 @@ void SingleStepperLite::set_step_interval(uint32_t step_interval){
 // Moreover, the task aims to pull the step pin back to LOW after the minimum pulse width.
 // Motor always finishes with LOW on the step pin and enough time passed for it to be registered.
 #ifndef current_motor_time
-inline void SingleStepperLite::_do_task(uint32_t current_motor_time) {
+inline void SingleStepperLite::_do_tasks(uint32_t current_motor_time) {
 #else
-inline void SingleStepperLite::_do_task() {
+inline void SingleStepperLite::_do_tasks() {
 #endif
 #if TIME_AUTOCORRECT_SUPPORT
 	if (_time_autocorrect_enabled){
 #ifndef current_motor_time
-		_do_task_autocorrect(current_motor_time); //route to the autocorrect version
+		_do_tasks_autocorrect(current_motor_time); //route to the autocorrect version
 #else
-		_do_task_autocorrect() //route to the autocorrect version
+		_do_tasks_autocorrect() //route to the autocorrect version
 #endif
 		return;
 	}
@@ -252,16 +252,16 @@ inline void SingleStepperLite::_do_task() {
 }
 
 #ifndef current_motor_time
-void SingleStepperLite::do_task(uint32_t current_motor_time){
-	_do_task(current_motor_time);
+void SingleStepperLite::do_tasks(uint32_t current_motor_time){
+	_do_tasks(current_motor_time);
 }
 #endif
 
-void SingleStepperLite::do_task(){
+void SingleStepperLite::do_tasks(){
 #ifndef current_motor_time
-	_do_task(micros());
+	_do_tasks(micros());
 #else
-	_do_task();	
+	_do_tasks();	
 #endif
 }
 

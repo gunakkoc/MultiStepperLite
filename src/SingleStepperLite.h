@@ -50,14 +50,14 @@ class SingleStepperLite {
 
 	public:
 		SingleStepperLite();
-		void do_task(); //this function must be called frequently to keep the motors running, ideally in the main loop
+		void do_tasks(); //this function must be called frequently to keep the motors running, ideally in the main loop
 		void set_min_pulse_width(uint32_t min_pulse_width); //generally needed when providing your own 32-bit timekeeping variable (e.g. a timer with 2us resolution)
 		void set_step_interval(uint32_t step_interval); //change the step interval of a running motor
 		void init_stepper(int step_pin);
 		bool start_finite(uint32_t step_interval, uint32_t step_count);
 		bool start_continuous(uint32_t step_interval);
 #ifndef current_motor_time
-		void do_task(uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
+		void do_tasks(uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
 		void resume(uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
 		bool start_continuous(uint32_t step_interval, uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
 		bool start_finite(uint32_t step_interval, uint32_t step_count, uint32_t current_motor_time); //only to be used when providing your own 32-bit timekeeping variable
@@ -76,10 +76,10 @@ class SingleStepperLite {
 	
 	private:
 #ifndef current_motor_time
-		inline void _do_task(uint32_t current_motor_time); //internal function to handle motor stepping
+		inline void _do_tasks(uint32_t current_motor_time); //internal function to handle motor stepping
 		bool _start_motor(uint32_t step_interval, uint32_t step_count, uint8_t finite_mode, uint32_t current_motor_time);
 #else
-		inline void _do_task(); //internal function to handle motor stepping
+		inline void _do_tasks(); //internal function to handle motor stepping
 		bool _start_motor(uint32_t step_interval, uint32_t step_count, uint8_t finite_mode);
 #endif
 		uint8_t _stepper_count;
@@ -88,9 +88,9 @@ class SingleStepperLite {
 		uint32_t _motor_delta_time;
 		bool _time_autocorrect_enabled;
 #ifndef current_motor_time
-		void _do_task_autocorrect(uint32_t current_motor_time);
+		void _do_tasks_autocorrect(uint32_t current_motor_time);
 #else
-		void _do_task_autocorrect();
+		void _do_tasks_autocorrect();
 #endif
 #endif
 	};
