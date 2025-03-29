@@ -90,7 +90,7 @@ inline void SingleStepperLite::_do_task_autocorrect() {
 			if ((current_motor_time - _m.last_low_time) < _min_pulse_width){
 				return;
 			} //if minimum time has not passed since the last LOW
-#endif
+#endif //SLOW_PROCESSOR == 0
 			digitalWrite(_m.step_pin, HIGH); //take a step by pulling from LOW to HIGH
 			_m.last_high_time = current_motor_time;
 			_m.last_corrected_high_time = current_motor_time;

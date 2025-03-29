@@ -46,7 +46,7 @@ void setup() {
 }
 
 void loop() {
-    s.do_task();
+    s.do_tasks();
     m.do_tasks();
     //delayMicroseconds(random(1000));
     if (!s.is_running() && (s_endus==0)){

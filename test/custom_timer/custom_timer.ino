@@ -46,7 +46,7 @@ void setup() {
 }
 
 void loop() {
-    s.do_task();
+    s.do_tasks();
     m.do_tasks();
     //delayMicroseconds(random(1000));
     if (!s.is_running() && (s_endus==0)){
@@ -60,11 +60,11 @@ void loop() {
     }
     if (!s.is_running() && !m.is_running(0) && !m.is_running(1)){
         uint32_t now_us = micros();
-        Serial.println("s runtime ms (expected 10sec): ");
+        Serial.println("s runtime us (expected 10sec): ");
         Serial.println(s_endus - s_startus);
-        Serial.println("m0 runtime ms (expected 10sec): ");
+        Serial.println("m0 runtime us (expected 10sec): ");
         Serial.println(m0_endus - m0_startus);
-        Serial.println("m1 runtime ms (expected 6 sec): ");
+        Serial.println("m1 runtime us (expected 6 sec): ");
         Serial.println(m1_endus - m1_startus);
         while (1){}
     }
