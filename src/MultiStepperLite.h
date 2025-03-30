@@ -56,6 +56,16 @@
 		#ifndef SLOW_PROCESSOR
 			#define SLOW_PROCESSOR 0 //set to 0 for faster processors (e.g. ESP32, RP2040, STM32)
 		#endif //SLOW_PROCESSOR
+		#ifdef ARDUINO_RASPBERRY_PI_PICO
+			#ifndef current_motor_time
+				#define current_motor_time micros() //use the time_us_32() function for Pico, it is atomic hence no cost.
+			#endif //current_motor_time
+		#endif //ARDUINO_RASPBERRY_PI_PICO
+		#ifdef ARDUINO_RASPBERRY_PI_PICO_2
+			#ifndef current_motor_time
+				#define current_motor_time micros() //use the time_us_32() function for Pico, it is atomic hence no cost.
+			#endif //current_motor_time
+		#endif //ARDUINO_RASPBERRY_PI_PICO_2
 	#endif //ARDUINO_ARCH_AVR
 
 #else //for non-Arduino frameworks 
