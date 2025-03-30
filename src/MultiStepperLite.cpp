@@ -14,8 +14,11 @@
 //
 // https://github.com/gunakkoc/MultiStepperLite
 
-#include <Arduino.h>
 #include "MultiStepperLite.h"
+#ifdef ARDUINO
+	#include <Arduino.h>
+#endif
+//TODO digitalWrite, LOW, HIGH macros for non-Arduino frameworks
 
 namespace {
 	typedef struct { //17 bytes
@@ -100,7 +103,7 @@ inline void MultiStepperLite::_do_tasks_autocorrect() {
 #endif
 				digitalWrite(m->step_pin, HIGH); //take a step by pulling from LOW to HIGH
 				m->last_high_time = current_motor_time;
-				m->last_corrected_high_time = current_motor_time;
+				m->last_corrected_high_time = m->last_high_time;
 				m->last_pin_state = true;
 				if (m->finite_mode) { //if finite mode, then decrease by 1, continuous mode doesn't decrease
 					--m->steps;
@@ -114,8 +117,6 @@ inline void MultiStepperLite::_do_tasks_autocorrect() {
 						m->last_corrected_high_time -= m->total_lag; //correct all
 						m->total_lag = 0;
 					}
-				} else {
-					m->last_corrected_high_time = m->last_high_time; //no correction needed
 				}
 				++m;
 				continue; //stepping took place, move on to the next motor
@@ -205,7 +206,11 @@ inline void MultiStepperLite::_do_tasks() {
 #endif
 #if TIME_AUTOCORRECT_SUPPORT
 	if (_time_autocorrect_enabled){
+#ifndef current_motor_time
 		_do_tasks_autocorrect(current_motor_time); //route to the autocorrect version
+#else
+		_do_tasks_autocorrect(); //route to the autocorrect version
+#endif
 		return;
 	}
 #endif

@@ -1,7 +1,3 @@
-#define SLOW_PROCESSOR 1
-#define TIME_AUTOCORRECT_SUPPORT 1
-// #define current_motor_time micros()
-
 #include "SingleStepperLite.h"
 #include "MultiStepperLite.h"
 
@@ -14,6 +10,7 @@ uint32_t m1_startus;
 uint32_t s_endus = 0;
 uint32_t m0_endus = 0;
 uint32_t m1_endus = 0;
+
 void setup() {
   Serial.begin(115200);
   s.init_stepper(2);
@@ -59,7 +56,6 @@ void loop() {
       m1_endus = micros();
     }
     if (!s.is_running() && !m.is_running(0) && !m.is_running(1)){
-        uint32_t now_us = micros();
         Serial.println("s runtime us (expected 10sec): ");
         Serial.println(s_endus - s_startus);
         Serial.println("m0 runtime us (expected 10sec): ");
