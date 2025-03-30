@@ -74,6 +74,22 @@
 			#include "pico/time.h"
 			#define current_motor_time time_us_32() //use the time_us_32() function for Pico, it is atomic hence no cost.
 		#endif //current_motor_time
+
+		//pinMode and digitalWrite macros for Pico
+		#include "pico/stdlib.h"
+		#ifndef LOW
+			#define LOW  0
+		#endif
+		#ifndef HIGH
+			#define HIGH 1
+		#endif
+		#ifndef pinMode
+			#define pinMode(pin, mode) gpio_set_dir(pin, (mode == OUTPUT ? GPIO_OUT : GPIO_IN))
+		#endif //pinMode
+		#ifndef digitalWrite
+			#define digitalWrite(pin, val) gpio_put(pin, val)
+		#endif //digitalWrite
+
 	#endif //PICO_BOARD
 
 	#ifdef STM32

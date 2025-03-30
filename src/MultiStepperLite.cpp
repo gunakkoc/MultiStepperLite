@@ -15,10 +15,6 @@
 // https://github.com/gunakkoc/MultiStepperLite
 
 #include "MultiStepperLite.h"
-#ifdef ARDUINO
-	#include <Arduino.h>
-#endif
-//TODO digitalWrite, LOW, HIGH macros for non-Arduino frameworks
 
 namespace {
 	typedef struct { //17 bytes
