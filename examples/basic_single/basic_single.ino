@@ -1,4 +1,4 @@
-// Run 2 motors concurrently with MultiStepperLite
+// Run 2 motors concurrently with SingleStepperLite
 
 #include "SingleStepperLite.h"
 #define motor0_enabledPin 8
