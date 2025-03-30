@@ -25,11 +25,21 @@ This library is the stand-alone motor control library. For a full implementation
 2. Include manually or follow the steps from [this Arduino Library Tutorial](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries/).
 3. Alternatively, install it through Arduino IDE's library.
 4. Include the library in your code:
-    ```cpp
-    #include "MultiStepperLite.h"
-    ```
+
+- For easily running multiple stepper motors, up to 6 steppers per instance (can be changed via the header).
+```cpp
+#include "MultiStepperLite.h"
+```
+
+- For having an instance per stepper motor and more individual control
+```cpp
+#include "SingleStepperLite.h"
+```
+
 
 ## Minimal Example
+
+### Multiple Motors with MultiStepperLite
 
 ```cpp
 #include "MultiStepperLite.h"
@@ -46,46 +56,108 @@ MultiStepperLite steppers(2); //initialize for 2 motors
 bool motor0_finish_signalled = false;
 
 void setup(){
-    Serial.begin(9600);
+	Serial.begin(9600);
 
-    //enable motors and set directions
-    pinMode(motor0_enabledPin, OUTPUT);
-    pinMode(motor0_dirPin, OUTPUT);
-    digitalWrite(motor0_enabledPin, LOW);
-    digitalWrite(motor0_dirPin, LOW);
+	//enable motors and set directions
+	pinMode(motor0_enabledPin, OUTPUT);
+	pinMode(motor0_dirPin, OUTPUT);
+	digitalWrite(motor0_enabledPin, LOW);
+	digitalWrite(motor0_dirPin, LOW);
 
-    pinMode(motor1_enabledPin, OUTPUT);
-    pinMode(motor1_dirPin, OUTPUT);
-    digitalWrite(motor1_enabledPin, LOW);
-    digitalWrite(motor1_dirPin, LOW);
-    
-    //initialize each of 2 motors with their index and their step pin
-    steppers.init_stepper(0, motor0_stepPin);
-    steppers.init_stepper(1, motor1_stepPin);
-    
-    //start motor 0, with 4000 microseconds delay between steps and with finite steps of 2500
-    steppers.start_finite(0, 4000, 2500);
-    
-    //start motor 1 to run indefinitely, with 2000 microseconds delay between steps
-    steppers.start_continuous(1, 2000);
+	pinMode(motor1_enabledPin, OUTPUT);
+	pinMode(motor1_dirPin, OUTPUT);
+	digitalWrite(motor1_enabledPin, LOW);
+	digitalWrite(motor1_dirPin, LOW);
+	
+	//initialize each of 2 motors with their index and their step pin
+	steppers.init_stepper(0, motor0_stepPin);
+	steppers.init_stepper(1, motor1_stepPin);
+	
+	//start motor 0, with 4000 microseconds delay between steps and with finite steps of 2500
+	steppers.start_finite(0, 4000, 2500);
+	
+	//start motor 1 to run indefinitely, with 2000 microseconds delay between steps
+	steppers.start_continuous(1, 2000);
 
 }
 
 void loop(){
 
-    steppers.do_tasks();
-    //alternatively, define uint32_t now_us = micros() and call steppers.do_tasks(now_us)
-    //this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
-    //without an argument, the function calls micros() internally
+	steppers.do_tasks();
+	//alternatively, define uint32_t now_us = micros() and call steppers.do_tasks(now_us)
+	//this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
+	//without an argument, the function calls micros() internally
 
-    if (steppers.is_finished(0)){ //if motor 0 completed all the steps
-        if (!motor0_finish_signalled) { //if end of motor task is not signalled already
-            Serial.println("Motor 0 is finished.");
-            motor0_finish_signalled = true;
-        }
-    } 
+	if (steppers.is_finished(0)){ //if motor 0 completed all the steps
+		if (!motor0_finish_signalled) { //if end of motor task is not signalled already
+			Serial.println("Motor 0 is finished.");
+			motor0_finish_signalled = true;
+		}
+	} 
 
-    //do other tasks
+	//do other tasks
+}
+```
+
+### Multiple Motors with SingleStepperLite
+
+```cpp
+#include "SingleStepperLite.h"
+#define motor0_enabledPin 8
+#define motor0_stepPin 2
+#define motor0_dirPin 5
+
+#define motor1_enabledPin 7
+#define motor1_stepPin 3
+#define motor1_dirPin 6
+
+SingleStepperLite steppers[2]; //initialize for 2 motors
+
+bool motor0_finish_signalled = false;
+
+void setup(){
+	Serial.begin(9600);
+
+	//enable motors and set directions
+	pinMode(motor0_enabledPin, OUTPUT);
+	pinMode(motor0_dirPin, OUTPUT);
+	digitalWrite(motor0_enabledPin, LOW);
+	digitalWrite(motor0_dirPin, LOW);
+
+	pinMode(motor1_enabledPin, OUTPUT);
+	pinMode(motor1_dirPin, OUTPUT);
+	digitalWrite(motor1_enabledPin, LOW);
+	digitalWrite(motor1_dirPin, LOW);
+	
+	//initialize each of 2 motors with their step pin
+	steppers[0].init_stepper(motor0_stepPin);
+	steppers[1].init_stepper(motor1_stepPin);
+	
+	//start motor 0, with 4000 microseconds delay between steps and with finite steps of 2500
+	steppers[0].start_finite(4000, 2500);
+	
+	//start motor 1 to run indefinitely, with 2000 microseconds delay between steps
+	steppers[1].start_continuous(2000);
+
+}
+
+void loop(){
+
+	steppers[0].do_tasks();
+	//alternatively, define uint32_t now_us = micros() and call steppers[0].do_tasks(now_us)
+	//this can be useful if micros() is already called for other purposes, as micros() is rather costly to call
+	//without an argument, the function calls micros() internally
+	
+	steppers[1].do_tasks(); //for SingleStepperLite, individual task functions should be called
+
+	if (steppers[0].is_finished()){ //if motor 0 completed all the steps
+		if (!motor0_finish_signalled) { //if end of motor task is not signalled already
+			Serial.println("Motor 0 is finished.");
+			motor0_finish_signalled = true;
+		}
+	} 
+
+	//do other tasks
 }
 ```
 
@@ -93,7 +165,9 @@ void loop(){
 
 For advanced features refer to the examples provided in the `examples` folder.
 
-- A basic example with 3 motors using a generic CNC shield: `examples/CNC_shield/`
+- Minimal example with MultiStepperLite: `examples/basic/`
+- Minimal example with SingleStepperLite: `examples/basic_single/`
+- A simple example with 3 motors using a generic CNC shield: `examples/CNC_shield/`
 - Operation with endstops example: `examples/endstops/`
 - Time autocorrection example: `examples/time_autocorrection/`
 - Custom timekeeping example: `examples/custom_timekeeping/`
@@ -101,9 +175,23 @@ For advanced features refer to the examples provided in the `examples` folder.
 
 ## Notes
 
+###  MultiStepperLite vs. SingleStepperLite
+
+- MultiStepperLite and SingleStepperLite have identical functions with no motor index argument in SingleStepperLite functions.
+- SingleStepperLite is, therefore, identical to MultiStepperLite with stepper count of 1. But each MultiStepperLite pre-allocate memory for multiple motors.
+- For different task prioritization or timing of motors, SingleStepperLite can be more efficient.
+
 ### Timekeeping
 
-By default, `MultiStepperLite` uses micros() and therefore microseconds for timekeeping. All defaults such as minimum pulse width for motor driver to register a change (default 2us), and minimum step interval of a motor (default 1000us) are defined in microseconds. Please see `examples/custom_timekeeping/` if you want to use a different timer.
+- By default, `MultiStepperLite` uses `micros()` and therefore microseconds for timekeeping. All defaults such as minimum pulse width for motor driver to register a change (default 2us), and minimum step interval of a motor (default 1000us) are defined in microseconds. Please see `examples/custom_timekeeping/` if you want to use a different timer.
+- For 8-bit slow MCUs such as ATmega328p the timekeeping variable or `micros()` is evaluated once, and this timestamp is used for the entire task.
+- For 32-bit MCUs, `micros()` is evaluated everytime the timing is accessed.
+- For both MultiStepperLite and SingleStepperLite, a macro to replace `micros()` can be used by adding to the header:
+```cpp
+#define current_motor_time millis()
+```
+This can be useful, for example, a custom sub-microsecond timer is wanted. 
+
 
 ### Time Autocorrection
 
