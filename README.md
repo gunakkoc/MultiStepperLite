@@ -14,24 +14,23 @@ This library is the stand-alone motor control library. For a full implementation
 - Control multiple stepper motors simultaneously and independently.
 - No delay functions or interrupts are used.
 - Lightweight and efficient for embedded systems.
-- Compatible with many microcontroller platforms (Arduino, Raspberry Pi Pico, STM32, ...)
+- Compatible with multiple microcontroller platforms (Arduino, Raspberry Pi Pico, STM32, ...)
 - Compatible with the most used stepper drivers (A4988, DRV8825, TMC2208, TB6600, ...)
 - Easy-to-use API for quick integration.
 - Supports custom time keeping (i.e., 32-bit timers with prescalers for sub-microsecond precision)
 
 ## Getting Started
 
-1. Clone or download this repository.
-2. Include manually or follow the steps from [this Arduino Library Tutorial](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries/).
-3. Alternatively, install it through Arduino IDE's library.
-4. Include the library in your code:
+1. Follow the steps from [this Arduino Library Tutorial](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries/).
+2. Alternatively, clone/download this repo and manually install it through Arduino IDE's library interface.
+3. Include the library in your code:
 
 - For easily running multiple stepper motors, up to 6 steppers per instance (can be changed via the header).
 ```cpp
 #include "MultiStepperLite.h"
 ```
 
-- For having an instance per stepper motor and more individual control
+- Or for having an instance per stepper motor and more individual control
 ```cpp
 #include "SingleStepperLite.h"
 ```
