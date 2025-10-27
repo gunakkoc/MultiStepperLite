@@ -40,6 +40,8 @@ This library is the stand-alone motor control library. For a full implementation
 
 ### Multiple Motors with MultiStepperLite
 
+This is for having minimal amount of code and basically is multiple `SingeStepperLite` instances (see the next example) where the all motor tasks are carried out with a single function `do_tasks()`.
+
 ```cpp
 #include "MultiStepperLite.h"
 #define motor0_enabledPin 8
@@ -99,6 +101,8 @@ void loop(){
 ```
 
 ### Multiple Motors with SingleStepperLite
+
+Here, each motor is an instance where all advanced options can be set in a per motor manner. In this case, each motors' task function `do_tasks()` must be called individually. This can be handy for prioritizing motor movements/reliability differently.
 
 ```cpp
 #include "SingleStepperLite.h"
